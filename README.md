@@ -51,4 +51,34 @@
 
 ### 기본 키 매핑 @Id
 
+- @GeneratedValue
+
+  - strategy = GenerationType.IDENTITY
+    - 기본 키 생성을 데이터베이스에 위임
+    - MySQL, PostgreSQL, DB2 에서 사용
+    - JPA는 보통 트랜잭션 커밋 시점에 Insert SQL 실행 
+    - AUTO_INCREMENT 는 데이터베이스에 INSERT SQL 실행한 이후에 ID 값을 알 수 있음
+    - IDENTITY 전략은 em.persist() 시점에서 즉시 INSERT SQL 실행하고 DB 에서 식별자를 조회
+
+  - :star2: strategy = GenerationType.SEQUENCE
+    - @SequenceGenerator()
+      - name: 식별자 생성기 이름
+      - sequenceName: 데이터베이스에 등록되어 있는 시퀀스 이름
+      - initialValue: DDL 생성 시에만 사용됨, 시퀀시 DDL을 생성할 때 처음 1 시작하는 수를 지정한다 
+      - <u>**allocationSize: 시퀀스 한 번 호출에 증가하는 수, 성능 최적화에 사용되며 데이터베이스 시퀀스 값이 하나씩 증가하도록 설정되어 있으면 이 값을 반드시 1로 설정해야 한다 (기본값 50)**</u>
+      - catalog, schema: 데이터베이스 catalog, schema 이름 
+      - @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_name")
+
+  - strategy = GenerationType.TABLE
+    - 키 생성 전용 테이블을 하나 만들어서 데이터베이스 시퀀스를 흉내내는 전략
+    - 장점: 모든 데이터베이스에 적용 가능
+    - 단점: 성능 
+
+#### 식별자 전략 권장
+
+- 기본키 제약 조건 null 아님, 유일, 변하면 안된다 
+- 미래까지 변하지 않는다는 조건을 만족하는 자연키를 찾기 힘들다. 대리키를 사용하자 
+- 주민등록번호도 기본 키로 적절하지 않다 
+- 권장 사항 : Long 형 + 대체키 + 키 생성 전략 사용 
+
 ### 연관관계 매핑 @ManyToOne @JoinColumn
